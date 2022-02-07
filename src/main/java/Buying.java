@@ -1,18 +1,15 @@
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Getter;
 import lombok.Setter;
 import javax.imageio.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 public class Buying {
     @Getter
@@ -23,28 +20,22 @@ public class Buying {
     private Store store;
     @Getter
     @Setter
-    private ArrayList<Product> products;
+    private List<Product> products;
     @Getter
     @Setter
-    private ArrayList<Integer> quantity;
+    private List<Integer> quantity;
     private int totalPrice;
     @Getter
     @Setter
     private String manager;
 
-    public Buying(){}
-    public Buying(Date buyingTime, Store store, ArrayList<Product> products, ArrayList<Integer> quantity, String manager) {
-        this.buyingTime = buyingTime;
-        this.store = store;
-        this.products = products;
-        this.quantity = quantity;
-        this.manager = manager;
-        for (int i = 0; i < products.size(); i++) {
-            this.totalPrice += products.get(i).getPrice() * quantity.get(i);
-        }
-    }
+    public Buying() {}
 
     public void createBill(String path) throws IOException {
+        for (int i = 0; i < products.size(); i++) {
+            totalPrice += products.get(i).getPrice() * quantity.get(i);
+        }
+
         int line = 60; //start
         int nl = 20;  //line height
         int bl = 5; //border left right
@@ -88,6 +79,7 @@ public class Buying {
             line += nl;
             g.drawString(products.get(i).getName(), bl, line);
             g.drawString("" + products.get(i).getPrice(), 130, line);
+            //toString тут почему-то не работает потому прибавляю к пустой строке
             g.drawString("" + quantity.get(i), 210, line);
             g.drawString("" + products.get(i).getPrice() * quantity.get(i), 300, line);
         }
@@ -100,10 +92,10 @@ public class Buying {
         g.drawString("" + totalPrice, 300, line);
         line += nl;
         g.drawString("Before tax", 130, line);
-        g.drawString("" + totalPrice * 0.92, 300, line);
+        g.drawString("" + (int)(totalPrice * 0.92), 300, line);
         line += nl;
         g.drawString("Tax(VAT)", 130, line);
-        g.drawString("" + totalPrice * 0.08, 300, line);
+        g.drawString("" + (int)(totalPrice * 0.08), 300, line);
         line += 5;
         g.drawLine(130, line, width - bl, line);
         line += nl;
@@ -124,17 +116,6 @@ public class Buying {
 
         File file = new File(path);
         ImageIO.write(bufferedImage, "jpg", file);
-    }
-
-    public String toJson() throws JsonProcessingException {
-        ObjectMapper objectMapper = new ObjectMapper();
-        return objectMapper.writeValueAsString(this);
-    }
-
-    public void publishToFile(String filePath) throws IOException {
-        BufferedWriter writer = new BufferedWriter(new FileWriter(filePath));
-        writer.write(this.toJson());
-        writer.close();
     }
 
     public Buying getFromFile(String filePath) throws IOException {
