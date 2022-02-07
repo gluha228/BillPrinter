@@ -1,0 +1,1 @@
+{"buyingTime":1644254929716,"store":{"id":"RO9101","adress":"Units St.50, Ulju-Gun, Ulsan","name":"Pan Dorothy","telNumber":"107-86-09325"},"products":[{"id":22837,"name":"Ice Americano","price":2000},{"id":22837,"name":"Ice Cappucino","price":2500}],"quantity":[1,2],"manager":"Lee"}
